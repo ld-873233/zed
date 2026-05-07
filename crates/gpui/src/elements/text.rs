@@ -19,37 +19,37 @@ use std::{
 };
 
 /// An [`Element`] that renders text.
-/// 
+///
 /// In general, [`Text`] objects should be created via the [`text`] macro:
 /// ```rust
 /// # use gpui::*;
 /// div().child(text!("hello"))
 /// ```
 /// ## IDs and Accessibility
-/// 
+///
 /// [`Text`] elements have an ID. This ID is primarily used to produce nodes in
 /// the accessibility tree, which allows the text to be visible to screen
 /// readers and other assistive technologies.
-/// 
+///
 /// IDs must be unique. todo! GPUI ID uniqueness
-/// 
+///
 /// This ID is stable across frames. If the same text, with the same ID, is
 /// present in two consecutive frames, no updates are reported to the screen
 /// reader. If the text changes, but the ID stays the same, then the screen
 /// reader will be notified that a text node's content has changed. **However**,
 /// if the ID changes, then the screen reader will be notified that a node has
 /// been removed, and a new node has been added.
-/// 
+///
 /// When using the [`text`] macro, each invocation of the macro will get a
 /// unique ID, derived from its position in the source code (filename, line, and
 /// column). For example:
 /// ```rust
-/// # use gpui::*; 
+/// # use gpui::*;
 /// let x = text!("hello");
 /// let y = text!("hello");
 /// // not equal, because different `text!` invocations produced them
 /// assert_ne!(x.id, y.id);
-/// 
+///
 /// fn make_text(s: &str) -> Text { text!(s) }
 /// let x = make_text("hello");
 /// let y = make_text("hello");
@@ -58,8 +58,8 @@ use std::{
 /// ```
 /// When the contents of an invocation of [`text`] do not change, this
 /// distinction is less relevant (with the caveat that you still need to take
-/// care to ensure that duplicate IDs do not appear). 
-/// 
+/// care to ensure that duplicate IDs do not appear).
+///
 /// However, when a [`text`] invocation's argument *does* change, you should
 /// consider whether this change should be reported as a node "updating its
 /// contents", or an old node being destroyed and a new node being created.
@@ -70,8 +70,8 @@ pub struct Text {
 }
 
 impl Text {
-    /// Create a new [`Text`] element with a specific ID. 
-    /// 
+    /// Create a new [`Text`] element with a specific ID.
+    ///
     /// If you want a unique ID to be assigned automatically, use the [`text`]
     /// macro. The docs for [`Text`] have more detail about choosing IDs.
     #[inline]
@@ -96,8 +96,6 @@ impl Text {
         self.id.as_ref()
     }
 }
-
-
 
 /// Trivial hash function for the location information produced by the [`text`]
 /// macro. Not covered by semver guarantees.
@@ -1203,7 +1201,7 @@ impl IntoElement for InteractiveText {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_into_element_for() {
         use crate::{ParentElement as _, SharedString, div};
@@ -1221,13 +1219,16 @@ mod tests {
         fn make_text_stable_id(happy: bool) -> Text {
             text!(if happy { "happy" } else { "sad" })
         }
-        
+
         // two calls to `text!` = two ids
         fn make_text_unstable_id(happy: bool) -> Text {
             if happy { text!("happy") } else { text!("sad") }
         }
 
         assert_eq!(make_text_stable_id(false).id, make_text_stable_id(true).id);
-        assert_ne!(make_text_unstable_id(false).id, make_text_unstable_id(true).id);
+        assert_ne!(
+            make_text_unstable_id(false).id,
+            make_text_unstable_id(true).id
+        );
     }
 }
