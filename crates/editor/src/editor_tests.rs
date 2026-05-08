@@ -22238,8 +22238,9 @@ async fn test_completions_default_resolve_data_handling(cx: &mut TestAppContext)
             CodeContextMenu::CodeActions(_) => panic!("Expected to have the completions menu"),
         }
     });
-    // Approximate initial displayed interval is 0..12. With extra item padding of 4 this is 0..16
-    // with 4 from the end.
+    // The first resolve runs before the menu has been rendered, so it falls back to the
+    // approximate visible count of 12 plus the extra item padding of 4, giving 0..16 with 4 from
+    // the end.
     assert_eq!(
         *resolved_items.lock(),
         [&items[0..16], &items[items.len() - 4..items.len()]]
@@ -22261,10 +22262,12 @@ async fn test_completions_default_resolve_data_handling(cx: &mut TestAppContext)
         editor.context_menu_prev(&ContextMenuPrevious, window, cx);
     });
     cx.run_until_parked();
+    // After the first render, `last_rendered_range` reflects the actual visible count which
+    // depends on the row height, so the new resolve range is items[items.len() - 18..items.len()].
     // Completions that have already been resolved are skipped.
     assert_eq!(
         *resolved_items.lock(),
-        items[items.len() - 17..items.len() - 4]
+        items[items.len() - 18..items.len() - 4]
             .iter()
             .cloned()
             .map(|mut item| {
