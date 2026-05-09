@@ -162,6 +162,9 @@ fn send_args_to_instance(args: &Args) -> anyhow::Result<()> {
             env: None,
             user_data_dir: args.user_data_dir.clone(),
             dev_container: args.dev_container,
+            cwd: std::env::current_dir()
+                .ok()
+                .map(|cwd| cwd.to_string_lossy().into_owned()),
         }
     };
 

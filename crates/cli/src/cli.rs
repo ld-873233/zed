@@ -65,6 +65,12 @@ pub enum CliRequest {
         env: Option<HashMap<String, String>>,
         user_data_dir: Option<String>,
         dev_container: bool,
+        /// CLI process's working directory. The Zed app process's own cwd is
+        /// unrelated to where the user invoked the CLI from (it's typically
+        /// `/` for macOS bundles, or the launch dir of an already-running
+        /// instance reused via IPC), so we forward it explicitly.
+        #[serde(default)]
+        cwd: Option<String>,
     },
     SetOpenBehavior {
         behavior: CliBehaviorSetting,
